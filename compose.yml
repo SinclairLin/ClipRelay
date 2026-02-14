@@ -1,0 +1,10 @@
+services:
+  relay:
+    build: .
+    container_name: relay
+    restart: unless-stopped
+    ports:
+      - "61154:61154"
+    environment:
+      - PORT=61154
+
