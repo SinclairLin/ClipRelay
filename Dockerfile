@@ -1,10 +1,10 @@
 FROM node:20-alpine
 
 WORKDIR /app
-COPY src/package.json package-lock.json* ./
-RUN npm ci --omit=dev || npm install --omit=dev
+COPY src/package.json src/package-lock.json* ./src/
+RUN cd src && (npm ci --omit=dev || npm install --omit=dev)
 
-COPY src/relay.js ./
+COPY src/relay.js ./src/
 
 ENV NODE_ENV=production
 ENV PORT=8080
