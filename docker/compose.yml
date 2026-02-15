@@ -1,11 +1,11 @@
 services:
   cliprelay:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
     restart: unless-stopped
     env_file:
-      - .env
+      - ../.env
     ports:
       - "8080:8080"
 

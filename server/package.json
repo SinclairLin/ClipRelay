@@ -2,7 +2,7 @@
   "name": "relay",
   "version": "1.0.0",
   "type": "module",
-  "main": "relay.js",
+  "main": "src/relay.js",
   "dependencies": {
     "express": "^4.19.2",
     "ws": "^8.17.0"
