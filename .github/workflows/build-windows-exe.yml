@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true }}
     runs-on: windows-latest
 
     steps:
@@ -25,8 +25,8 @@ jobs:
         shell: pwsh
         run: |
           python -m pip install --upgrade pip
-          if (Test-Path "src/requirements.txt") {
-            pip install -r "src/requirements.txt"
+          if (Test-Path "client/requirements.txt") {
+            pip install -r "client/requirements.txt"
           } elseif (Test-Path "requirements.txt") {
             pip install -r "requirements.txt"
           } else {
@@ -37,7 +37,7 @@ jobs:
       - name: Build exe (PyInstaller)
         shell: pwsh
         run: |
-          pyinstaller --noconfirm --onefile --name ClipRelayClient "src/cp_client.py"
+          pyinstaller --noconfirm --onefile --name ClipRelayClient "client/src/cp_client.py"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

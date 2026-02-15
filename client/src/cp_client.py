@@ -29,7 +29,13 @@ def load_config() -> tuple[dict, str]:
     except Exception:
         pass
 
+    try:
+        candidates.append(Path(__file__).resolve().parent.parent / "config" / "config.json")
+    except Exception:
+        pass
+
     candidates.append(Path.cwd() / "config.json")
+    candidates.append(Path.cwd() / "client" / "config" / "config.json")
 
     for cfg_path in candidates:
         try:
@@ -85,7 +91,18 @@ def extract_code(text: str) -> str:
     text = (text or "").strip()
     if not text:
         return ""
-    m = re.search(r"\b(\d{4,8})\b", text)
+
+    # Prefer digits near OTP-related keywords (Chinese + English).
+    keyword = (
+        r"(?:验证码|校验码|动态码|短信码|登录码|提取码|"
+        r"otp|passcode|verification\s*code|security\s*code|one[-\s]*time\s*(?:password|passcode)?|code)"
+    )
+    m = re.search(rf"{keyword}\D{{0,20}}(?<!\d)(\d{{4,8}})(?!\d)", text, flags=re.IGNORECASE)
+    if not m:
+        m = re.search(rf"(?<!\d)(\d{{4,8}})(?!\d)\D{{0,20}}{keyword}", text, flags=re.IGNORECASE)
+    if not m:
+        # Fallback: first 4-8 digits not adjacent to other digits.
+        m = re.search(r"(?<!\d)(\d{4,8})(?!\d)", text)
     return m.group(1) if m else text
 
 def log(msg: str):
@@ -121,6 +138,13 @@ async def run():
                             log(f"Clipboard updated: {code!r}")
                         else:
                             log("Clipboard updated")
+
+                # async for 结束通常代表对端已关闭连接
+                close_code = getattr(ws, "close_code", None)
+                close_reason = getattr(ws, "close_reason", None) or ""
+                log(f"Connection closed by server (code={close_code}, reason={close_reason!r}), retry in {retry}s...")
+                await asyncio.sleep(retry)
+                retry = min(retry * 2, 30)
 
         except Exception as e:
             log(f"Disconnected, retry in {retry}s... ({type(e).__name__})")

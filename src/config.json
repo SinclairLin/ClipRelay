@@ -1,8 +1,0 @@
-{
-  "base": "cp.sinclairl.com",
-  "room": "test",
-  "token": "test",
-  "use_tls": true,
-  "verbose": false
-}
-
