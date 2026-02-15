@@ -38,7 +38,7 @@ def pick(key: str, env_key: str, default):
         return v
     return default
 
-BASE = str(pick("base", "CP_BASE", "cp.sinclairl.com"))
+BASE = str(pick("base", "CP_BASE", "example.com"))
 ROOM = str(pick("room", "CP_ROOM", "YOUR_ROOM_KEY"))
 TOKEN = str(pick("token", "CP_TOKEN", ROOM))
 
