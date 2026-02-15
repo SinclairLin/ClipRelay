@@ -1,12 +1,11 @@
 services:
-  relay:
+  cliprelay:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: relay
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
-      - "61154:8080"
-    environment:
-      - PORT=8080
+      - "8080:8080"
 
