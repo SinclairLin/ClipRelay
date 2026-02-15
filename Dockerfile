@@ -1,14 +1,14 @@
 FROM node:20-alpine
 
 WORKDIR /app
-COPY package.json package-lock.json* ./
+COPY src/package.json package-lock.json* ./
 RUN npm ci --omit=dev || npm install --omit=dev
 
-COPY relay.js ./
+COPY src/relay.js ./
 
 ENV NODE_ENV=production
 ENV PORT=8080
 
 EXPOSE 8080
-CMD ["node", "relay.js"]
+CMD ["node", "src/relay.js"]
 
