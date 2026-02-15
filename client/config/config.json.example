@@ -3,5 +3,6 @@
   "room": "abcd1234",
   "token": "abcd1234",
   "use_tls": true,
-  "verbose": false
+  "verbose": false,
+  "tray": true
 }

@@ -30,18 +30,17 @@ jobs:
           } elseif (Test-Path "requirements.txt") {
             pip install -r "requirements.txt"
           } else {
-            pip install websockets pyperclip
+            pip install websockets pyperclip pystray pillow
           }
           pip install pyinstaller
 
       - name: Build exe (PyInstaller)
         shell: pwsh
         run: |
-          pyinstaller --noconfirm --onefile --name ClipRelayClient "client/src/cp_client.py"
+          pyinstaller --noconfirm --onefile --windowed --noconsole --name ClipRelayClient "client/src/cp_client.py"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ClipRelayClient-windows
           path: dist/ClipRelayClient.exe
-
