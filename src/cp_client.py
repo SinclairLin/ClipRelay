@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 import re
+import sys
 import time
 from pathlib import Path
 
@@ -10,22 +11,40 @@ import pyperclip
 
 # ---------- config loading (config.json > env > defaults) ----------
 
-def load_config() -> dict:
+def load_config() -> tuple[dict, str]:
     """
-    Load config.json from the same directory as this script.
-    If missing or invalid, return {}.
+    返回: (config_dict, loaded_path_str)
     """
-    try:
-        cfg_path = Path(__file__).resolve().parent / "config.json"
-        if not cfg_path.exists():
-            return {}
-        with cfg_path.open("r", encoding="utf-8") as f:
-            data = json.load(f)
-        return data if isinstance(data, dict) else {}
-    except Exception:
-        return {}
+    candidates = []
 
-_cfg = load_config()
+    # 1) exe directory (PyInstaller / frozen)
+    if getattr(sys, "frozen", False):
+        try:
+            candidates.append(Path(sys.executable).resolve().parent / "config.json")
+        except Exception:
+            pass
+
+    try:
+        candidates.append(Path(__file__).resolve().parent / "config.json")
+    except Exception:
+        pass
+
+    candidates.append(Path.cwd() / "config.json")
+
+    for cfg_path in candidates:
+        try:
+            if cfg_path.exists():
+                with cfg_path.open("r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if isinstance(data, dict):
+                    return data, str(cfg_path)
+                return {}, str(cfg_path)
+        except Exception:
+            continue
+
+    return {}, ""
+
+_cfg, _cfg_path = load_config()
 
 def pick(key: str, env_key: str, default):
     """
@@ -74,6 +93,7 @@ def log(msg: str):
 
 async def run():
     retry = 1
+    log(f"Config: {_cfg_path if _cfg_path else 'NOT FOUND'}")
     while True:
         try:
             log(f"Connecting: {SCHEME}://{BASE}/ws (room hidden)")
