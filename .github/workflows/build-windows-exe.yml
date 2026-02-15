@@ -18,20 +18,28 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
+        shell: pwsh
         run: |
           python -m pip install --upgrade pip
-          if (Test-Path requirements.txt) {
-            pip install -r requirements.txt
+
+          # 优先 src/requirements.txt，其次根目录 requirements.txt；都没有就装最小依赖
+          if (Test-Path "src/requirements.txt") {
+            pip install -r "src/requirements.txt"
+          } elseif (Test-Path "requirements.txt") {
+            pip install -r "requirements.txt"
           } else {
             pip install websockets pyperclip
           }
+
           pip install pyinstaller
 
       - name: Build exe (PyInstaller)
+        shell: pwsh
         run: |
-          pyinstaller --noconfirm --onefile --name ClipRelayClient cp_client.py
+          pyinstaller --noconfirm --onefile --name ClipRelayClient "src/cp_client.py"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
