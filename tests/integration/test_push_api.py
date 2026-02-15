@@ -34,7 +34,7 @@ def parse_args() -> argparse.Namespace:
 
 def build_cases() -> list[str]:
     return [
-        "【阿里云】您正在进行短信登录，验证码931018，切勿将验证码泄露于他人，本条验证码有效期15分钟。",
+        "您正在进行短信登录，验证码931018，切勿将验证码泄露于他人，本条验证码有效期15分钟。",
         "您本次登录验证码是 4827，请勿泄露。",
         "订单号20260215，验证码654321。",
         "Your verification code is 741952. It expires in 10 minutes.",
